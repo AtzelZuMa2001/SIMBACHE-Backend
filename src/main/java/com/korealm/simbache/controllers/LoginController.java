@@ -1,8 +1,8 @@
-package com.korealm.simbache.controller;
+package com.korealm.simbache.controllers;
 
-import com.korealm.simbache.dto.login.LoginRequest;
-import com.korealm.simbache.dto.login.LoginResponse;
-import com.korealm.simbache.service.LoginServiceImpl;
+import com.korealm.simbache.dtos.login.LoginRequest;
+import com.korealm.simbache.dtos.login.LoginResponse;
+import com.korealm.simbache.services.LoginServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

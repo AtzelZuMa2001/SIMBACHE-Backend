@@ -1,4 +1,4 @@
-package com.korealm.simbache.model;
+package com.korealm.simbache.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

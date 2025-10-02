@@ -1,8 +1,7 @@
-package com.korealm.simbache.service.interfaces;
+package com.korealm.simbache.services.interfaces;
 
-import com.korealm.simbache.dto.login.LoginRequest;
-import com.korealm.simbache.dto.login.LoginResponse;
-import jakarta.transaction.Transactional;
+import com.korealm.simbache.dtos.login.LoginRequest;
+import com.korealm.simbache.dtos.login.LoginResponse;
 
 /*
 * Esta interfaz no es parte del diseño MVC, no es necesario que imites esta arquitectura si no querés. Pero deja te explico:

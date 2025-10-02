@@ -1,4 +1,4 @@
-package com.korealm.simbache.model;
+package com.korealm.simbache.models;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,6 +1,6 @@
 package com.korealm.simbache.exceptions;
 
-import com.korealm.simbache.dto.login.ErrorResponse;
+import com.korealm.simbache.dtos.login.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

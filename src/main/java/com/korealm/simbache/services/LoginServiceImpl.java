@@ -1,13 +1,13 @@
-package com.korealm.simbache.service;
+package com.korealm.simbache.services;
 
-import com.korealm.simbache.dto.login.LoginRequest;
-import com.korealm.simbache.dto.login.LoginResponse;
+import com.korealm.simbache.dtos.login.LoginRequest;
+import com.korealm.simbache.dtos.login.LoginResponse;
 import com.korealm.simbache.exceptions.InvalidLoginException;
-import com.korealm.simbache.model.SessionToken;
-import com.korealm.simbache.model.User;
-import com.korealm.simbache.repository.SessionTokenRepository;
-import com.korealm.simbache.repository.UserRepository;
-import com.korealm.simbache.service.interfaces.LoginService;
+import com.korealm.simbache.models.SessionToken;
+import com.korealm.simbache.models.User;
+import com.korealm.simbache.repositories.SessionTokenRepository;
+import com.korealm.simbache.repositories.UserRepository;
+import com.korealm.simbache.services.interfaces.LoginService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,8 +69,8 @@ public class LoginServiceImpl implements LoginService {
         // 5. Construir el objeto que vamos a enviar de respuesta de regreso al cliente que hizo la petición de login.
         return LoginResponse.builder()
                 .token(newTokenId)
-                .userId(user.getUserId())
-                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 

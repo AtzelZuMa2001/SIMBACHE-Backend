@@ -1,4 +1,4 @@
-package com.korealm.simbache.dto.login;
+package com.korealm.simbache.dtos.login;
 
 import lombok.*;
 

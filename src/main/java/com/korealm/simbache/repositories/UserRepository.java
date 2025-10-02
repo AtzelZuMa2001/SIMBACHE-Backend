@@ -1,6 +1,6 @@
-package com.korealm.simbache.repository;
+package com.korealm.simbache.repositories;
 
-import com.korealm.simbache.model.User;
+import com.korealm.simbache.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

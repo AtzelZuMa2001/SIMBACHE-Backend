@@ -1,6 +1,6 @@
-package com.korealm.simbache.repository;
+package com.korealm.simbache.repositories;
 
-import com.korealm.simbache.model.SessionToken;
+import com.korealm.simbache.models.SessionToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
