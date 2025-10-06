@@ -3,6 +3,7 @@ package com.korealm.simbache.services;
 import com.korealm.simbache.dtos.login.LoginRequest;
 import com.korealm.simbache.dtos.login.LoginResponse;
 import com.korealm.simbache.exceptions.InvalidLoginException;
+import com.korealm.simbache.exceptions.InvalidLogoutException;
 import com.korealm.simbache.models.SessionToken;
 import com.korealm.simbache.models.User;
 import com.korealm.simbache.repositories.SessionTokenRepository;
@@ -11,6 +12,7 @@ import com.korealm.simbache.services.interfaces.LoginService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,6 +89,9 @@ public class LoginServiceImpl implements LoginService {
     @Transactional
     @Override
     public void logout(String tokenId) {
-        sessionTokenRepository.deleteByTokenId(tokenId);
+        var token = sessionTokenRepository.findByTokenId(tokenId)
+                .orElseThrow(() -> new InvalidLogoutException("No se puede cerrar la sesión: el token no existe"));
+
+        sessionTokenRepository.delete(token);
     }
 }

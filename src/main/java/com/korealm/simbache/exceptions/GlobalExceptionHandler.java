@@ -44,6 +44,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
+    @ExceptionHandler(InvalidLogoutException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidLogout(InvalidLogoutException ex) {
+        ErrorResponse error = ErrorResponse.builder()
+                .message(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 
     /* Solo por si acaso sucede una excepción no identificada en el servidor, quiero que notifique a los usuarios para
     que no se queden esperando una respuesta para siempre.

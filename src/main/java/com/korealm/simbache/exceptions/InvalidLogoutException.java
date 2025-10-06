@@ -1,4 +1,7 @@
 package com.korealm.simbache.exceptions;
 
-public class InvalidLogoutException {
+public class InvalidLogoutException extends RuntimeException {
+    public InvalidLogoutException(String message) {
+        super(message);
+    }
 }
