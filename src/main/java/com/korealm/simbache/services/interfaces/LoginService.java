@@ -1,7 +1,7 @@
 package com.korealm.simbache.services.interfaces;
 
-import com.korealm.simbache.dtos.login.LoginRequest;
-import com.korealm.simbache.dtos.login.LoginResponse;
+import com.korealm.simbache.dtos.login.LoginRequestDto;
+import com.korealm.simbache.dtos.login.LoginResponseDto;
 
 /*
 * Esta interfaz no es parte del diseño MVC, no es necesario que imites esta arquitectura si no querés. Pero deja te explico:
@@ -14,7 +14,7 @@ import com.korealm.simbache.dtos.login.LoginResponse;
 * */
 
 public interface LoginService {
-    LoginResponse login(LoginRequest request);
+    LoginResponseDto login(LoginRequestDto request);
 
     void logout(String tokenId);
 }

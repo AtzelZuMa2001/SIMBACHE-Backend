@@ -1,6 +1,7 @@
 package com.korealm.simbache.repositories;
 
 import com.korealm.simbache.models.SessionToken;
+import com.korealm.simbache.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
@@ -10,10 +11,10 @@ public interface SessionTokenRepository extends JpaRepository<SessionToken, Stri
     Optional<SessionToken> findByTokenId(String tokenId);
 
     // Encontrar el token asociado al usuario, o encontrar token por usuario, pues.
-    Optional<SessionToken> findByUserFk(Long userFk);
+    Optional<SessionToken> findByUser(User user);
 
     // Borrar un token (logout)
     void deleteByTokenId(String tokenId);
 
-    void deleteByUserFk(Long userFk);
+    void deleteByUser(User user);
 }

@@ -1,7 +1,7 @@
 package com.korealm.simbache.controllers;
 
-import com.korealm.simbache.dtos.login.LoginRequest;
-import com.korealm.simbache.dtos.login.LoginResponse;
+import com.korealm.simbache.dtos.login.LoginRequestDto;
+import com.korealm.simbache.dtos.login.LoginResponseDto;
 import com.korealm.simbache.services.LoginServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +47,11 @@ public class LoginController {
     * */
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         // Aquí llamamos al servicio que nos va a manejar la lógica de login.
         // Si todo sale bien, el servicio nos devuelve un objeto LoginResponse que contiene el token de autenticación, y el usuario.
         // Si algo sale mal, en el propio servicio se lanzará una excepción, y Spring nos devolverá un código HTTP 401 (Unauthorized) con un mensaje de error.
-        LoginResponse response = loginService.login(request);
+        LoginResponseDto response = loginService.login(request);
         return ResponseEntity.ok(response);
     }
 

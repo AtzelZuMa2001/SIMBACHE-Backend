@@ -1,9 +1,6 @@
 package com.korealm.simbache.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,6 +12,7 @@ public class SessionToken {
     @Column(name = "TokenId", length = 128)
     private String tokenId;   // the random UUID/session string
 
-    @Column(name = "User_FK", nullable = false)
-    private Long userFk;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "User_FK", nullable = false, unique = true)
+    private User user;
 }

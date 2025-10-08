@@ -1,6 +1,6 @@
 package com.korealm.simbache.exceptions;
 
-import com.korealm.simbache.dtos.login.ErrorResponse;
+import com.korealm.simbache.dtos.login.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,9 +35,9 @@ public class GlobalExceptionHandler {
     * que hicieron la solicitud al sistema).
     * */
     @ExceptionHandler(InvalidLoginException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidLogin(InvalidLoginException ex) {
+    public ResponseEntity<ErrorResponseDto> handleInvalidLogin(InvalidLoginException ex) {
 
-        ErrorResponse error = ErrorResponse.builder()
+        ErrorResponseDto error = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .build();
 
@@ -45,8 +45,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidLogoutException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidLogout(InvalidLogoutException ex) {
-        ErrorResponse error = ErrorResponse.builder()
+    public ResponseEntity<ErrorResponseDto> handleInvalidLogout(InvalidLogoutException ex) {
+        ErrorResponseDto error = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .build();
 
@@ -58,8 +58,8 @@ public class GlobalExceptionHandler {
     que no se queden esperando una respuesta para siempre.
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex) {
-        ErrorResponse error = ErrorResponse.builder()
+    public ResponseEntity<ErrorResponseDto> handleRuntime(RuntimeException ex) {
+        ErrorResponseDto error = ErrorResponseDto.builder()
                 .message("Unexpected error: " + ex.getMessage())
                 .build();
 
