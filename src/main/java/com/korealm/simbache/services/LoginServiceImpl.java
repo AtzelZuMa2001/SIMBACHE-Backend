@@ -22,6 +22,7 @@ public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final SessionTokenRepository sessionTokenRepository;
 
+    @Transactional
     @Override
     public LoginResponseDto login(LoginRequestDto request) {
         // Hace la query para obtener el usuario, y si falla o no revuelve nada, lanza una excepción y regresa la LoginController.
@@ -36,15 +37,11 @@ public class LoginServiceImpl implements LoginService {
 
         /* En este punto ya verificamos que el usuario y la contraseña hacen match. Asi que podemos seguir adelante.
 
-        Si el usuario ya tenía tokens viejos, lo actualizamos por el nuevo con un update. Si no tenía tokens,
-         pues hacemos un insert
+        Si el usuario ya tenía tokens viejos, o no tenía ninguno, nos da igual. Creamos uno nuevo, y le decimos a Hibernate que actualice el usuario en memoria y en la BD.
          */
         SessionToken newToken = generateNewToken(user);
-        sessionTokenRepository.findByUser(user)
-                        .ifPresentOrElse(
-                                oldToken -> oldToken.setTokenId(newToken.getTokenId()), // Update
-                                () -> sessionTokenRepository.save(newToken) // Insert
-                        );
+        user.setSessionToken(newToken);
+
 
         // 5. Construir el objeto que vamos a enviar de respuesta de regreso al cliente que hizo la petición de login.
         return LoginResponseDto.builder()
