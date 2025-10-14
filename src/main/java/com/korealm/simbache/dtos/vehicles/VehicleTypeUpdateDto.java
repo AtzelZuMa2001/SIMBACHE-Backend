@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class VehicleTypeDto {
+public class VehicleTypeUpdateDto {
     @NotBlank
-    private short typeId;
+    private String currentName;
 
     @NotBlank
-    private String typeName;
+    private String newName;
 }

@@ -53,6 +53,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    // Excepción para cuando el usuario no está autorizado o manda un token inválido
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidInsert(UnauthorizedAccessException ex) {
+        ErrorResponseDto error = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    // Excepción para cuando el usuario quiere insertar un valor que ya existe en la base de datos.
+    @ExceptionHandler(InvalidInsertException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidInsert(InvalidInsertException ex) {
+        ErrorResponseDto error = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(InvalidUpdateException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidUpdate(InvalidUpdateException ex) {
+        ErrorResponseDto error = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 
     /* Solo por si acaso sucede una excepción no identificada en el servidor, quiero que notifique a los usuarios para
     que no se queden esperando una respuesta para siempre.

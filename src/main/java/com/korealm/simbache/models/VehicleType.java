@@ -9,8 +9,8 @@ import lombok.*;
 public class VehicleType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private short TypeId;
+    private short typeId;
 
-    @Column(nullable = false)
-    private String TypeName;
+    @Column(name = "TypeName", nullable = false)
+    private String typeName;
 }
