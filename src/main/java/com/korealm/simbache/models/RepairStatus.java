@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "VehicleType")
+@Table(name = "RepairStatus")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class VehicleType {
+public class RepairStatus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private short typeId;
+    @Column(name = "StatusId")
+    private short statusId;
 
-    @Column(name = "TypeName", nullable = false, unique = true)
-    private String typeName;
+    @Column(name = "StatusName", nullable = false, length = 64)
+    private String statusName;
 }
