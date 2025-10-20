@@ -23,19 +23,21 @@ public class VerificationService {
         return Optional.of(session);
     }
 
-    public boolean isUserAuthorized(String token) {
-        return validateProvidedToken(token).isPresent();
+    public boolean isUserUnauthorized(String token) {
+        return validateProvidedToken(token).isEmpty();
     }
 
     // Esta función solo se usa para comprobar si el usuario es administrador. Regresa un booleano, simple.
     public boolean isUserAdmin(String token) {
-        var sessionToken = validateProvidedToken(token);
+        var sessionToken = validateProvidedToken(token); // Si el token está vacío va a lanzar excepción
 
         if (sessionToken.isEmpty()) return false;
 
         var user = userRepository.findBySessionToken(sessionToken.get());
 
         // Administradores: por ahora consideramos roles 3 y 4 como admin (ajustar si cambian las reglas)
-        return user.map(u -> u.getUserRole() != null && (u.getUserRole().getRoleId() == 3 || u.getUserRole().getRoleId() == 4)).orElse(false);
+        return user
+                .map(u -> u.getUserRole() != null && (u.getUserRole().getRoleId() == 3 || u.getUserRole().getRoleId() == 4))
+                .orElse(false);
     }
 }

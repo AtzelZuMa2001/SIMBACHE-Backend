@@ -5,10 +5,8 @@ import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
 import com.korealm.simbache.models.VehicleType;
-import com.korealm.simbache.repositories.SessionTokenRepository;
 import com.korealm.simbache.repositories.VehicleTypeRepository;
 import com.korealm.simbache.services.interfaces.VehicleTypeService;
-import com.korealm.simbache.services.VerificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,12 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
     private final VehicleTypeRepository vehicleTypeRepository;
-    private final SessionTokenRepository sessionTokenRepository;
     private final VerificationService verificationService;
 
     @Override
     public List<String> getAllVehicleTypes(String token) {
-        if (! verificationService.isUserAuthorized(token) ) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
+        if (verificationService.isUserUnauthorized(token)) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
 
         var result = vehicleTypeRepository.findAll();
 
@@ -33,9 +30,9 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
 
     @Override
     public short addVehicleType(String token, String newType) {
-        if (! verificationService.isUserAuthorized(token) ) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
+        if (! verificationService.isUserAdmin(token)) throw new UnauthorizedAccessException("El usuario no tiene permisos para la acción solicitada.");
 
-        if (vehicleTypeRepository.findByTypeName(newType).isPresent()) throw new InvalidInsertException("The vehicle type already exists. Unable to insert it.");
+        if (vehicleTypeRepository.findByTypeName(newType).isPresent()) throw new InvalidInsertException("El tipo de vehículo ya existe. No es posible crearlo de nuevo..");
 
         var vehicleType = VehicleType.builder()
                 .typeName(newType)
@@ -48,11 +45,11 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
 
     @Override
     public void updateVehicleType(String token, VehicleTypeUpdateDto updateDto) {
-        if (! verificationService.isUserAuthorized(token) ) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
+        if (! verificationService.isUserAdmin(token)) throw new UnauthorizedAccessException("El usuario no tiene permisos para la acción solicitada.");
 
         var vehicle = vehicleTypeRepository
                 .findByTypeName(updateDto.getCurrentName())
-                .orElseThrow(() -> new InvalidUpdateException("The vehicle type does not exist. Unable to update it."));
+                .orElseThrow(() -> new InvalidUpdateException("El tipo de vehículo no existe. No es posible actualizarlo."));
 
         vehicle.setTypeName(updateDto.getNewName());
         vehicleTypeRepository.save(vehicle);
@@ -61,10 +58,10 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
     @Override
     @Transactional
     public void deleteVehicleType(String token, String typeName) {
-        if (! verificationService.isUserAuthorized(token) ) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
+        if (! verificationService.isUserAdmin(token)) throw new UnauthorizedAccessException("El usuario no tiene permisos para la acción solicitada.");
 
         var vehicle = vehicleTypeRepository.findByTypeName(typeName)
-                .orElseThrow(() -> new InvalidUpdateException("The vehicle type does not exist. Unable to delete it."));
+                .orElseThrow(() -> new InvalidUpdateException("El tipo de vehículo no existe. No es posible borrarlo."));
 
         vehicleTypeRepository.deleteByTypeId(vehicle.getTypeId());
     }
