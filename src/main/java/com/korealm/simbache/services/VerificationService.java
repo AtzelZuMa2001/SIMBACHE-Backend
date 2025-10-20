@@ -2,6 +2,7 @@ package com.korealm.simbache.services;
 
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
 import com.korealm.simbache.models.SessionToken;
+import com.korealm.simbache.models.User;
 import com.korealm.simbache.repositories.SessionTokenRepository;
 import com.korealm.simbache.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,11 @@ public class VerificationService {
 
     public boolean isUserUnauthorized(String token) {
         return validateProvidedToken(token).isEmpty();
+    }
+
+    public Optional<User> getUserByToken(String token) {
+        var sessionToken = validateProvidedToken(token);
+        return sessionToken.flatMap(userRepository::findBySessionToken);
     }
 
     // Esta función solo se usa para comprobar si el usuario es administrador. Regresa un booleano, simple.

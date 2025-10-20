@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +20,7 @@ import java.util.UUID;
 public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final SessionTokenRepository sessionTokenRepository;
+    private final AuditLoggingServiceImpl auditLoggingService;
 
     @Transactional
     @Override
@@ -42,6 +42,8 @@ public class LoginServiceImpl implements LoginService {
         SessionToken newToken = generateNewToken(user);
         user.setSessionToken(newToken);
 
+        // Log de auditoría
+        auditLoggingService.log(user, "INICIO_SESION", "El usuario " + user.getUsername() + " inició sesión correctamente.");
 
         // 5. Construir el objeto que vamos a enviar de respuesta de regreso al cliente que hizo la petición de login.
         return LoginResponseDto.builder()
@@ -66,6 +68,9 @@ public class LoginServiceImpl implements LoginService {
     public void logout(String tokenId) {
         var token = sessionTokenRepository.findByTokenId(tokenId)
                 .orElseThrow(() -> new InvalidLogoutException("No se puede cerrar la sesión: el token no existe"));
+
+        // Log de auditoría antes de eliminar el token
+        auditLoggingService.logByToken(token, "CIERRE_SESION", "El usuario " + token.getUser().getUsername() + " cerró sesión.");
 
         sessionTokenRepository.delete(token);
     }

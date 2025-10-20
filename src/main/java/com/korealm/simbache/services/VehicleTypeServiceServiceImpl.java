@@ -18,12 +18,18 @@ import java.util.List;
 public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
     private final VehicleTypeRepository vehicleTypeRepository;
     private final VerificationService verificationService;
+    private final AuditLoggingServiceImpl auditLoggingService;
 
     @Override
     public List<String> getAllVehicleTypes(String token) {
         if (verificationService.isUserUnauthorized(token)) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
 
         var result = vehicleTypeRepository.findAll();
+
+        // Log de auditoría: consulta de tipos de vehículo
+        verificationService.getUserByToken(token).ifPresent(u ->
+                auditLoggingService.log(u, "CONSULTA_TIPOS_VEHICULO", "El usuario " + u.getUsername() + " consultó la lista de tipos de vehículo (" + result.size() + ") elementos).")
+        );
 
         return result.stream().map(VehicleType::getTypeName).toList();
     }
@@ -40,6 +46,11 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
 
         var saved = vehicleTypeRepository.save(vehicleType);
 
+        // Log de auditoría: creación
+        verificationService.getUserByToken(token).ifPresent(u ->
+                auditLoggingService.log(u, "CREACION_TIPO_VEHICULO", "El usuario " + u.getUsername() + " creó el tipo de vehículo '" + newType + "' con id " + saved.getTypeId() + ".")
+        );
+
         return saved.getTypeId();
     }
 
@@ -53,6 +64,11 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
 
         vehicle.setTypeName(updateDto.getNewName());
         vehicleTypeRepository.save(vehicle);
+
+        // Log de auditoría: actualización
+        verificationService.getUserByToken(token).ifPresent(u ->
+                auditLoggingService.log(u, "ACTUALIZACION_TIPO_VEHICULO", "El usuario " + u.getUsername() + " actualizó el tipo de vehículo de '" + updateDto.getCurrentName() + "' a '" + updateDto.getNewName() + "'.")
+        );
     }
 
     @Override
@@ -64,5 +80,10 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
                 .orElseThrow(() -> new InvalidUpdateException("El tipo de vehículo no existe. No es posible borrarlo."));
 
         vehicleTypeRepository.deleteByTypeId(vehicle.getTypeId());
+
+        // Log de auditoría: eliminación
+        verificationService.getUserByToken(token).ifPresent(u ->
+                auditLoggingService.log(u, "ELIMINACION_TIPO_VEHICULO", "El usuario " + u.getUsername() + " eliminó el tipo de vehículo '" + typeName + "' (id " + vehicle.getTypeId() + ").")
+        );
     }
 }

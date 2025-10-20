@@ -1,6 +1,9 @@
 package com.korealm.simbache.exceptions;
 
 import com.korealm.simbache.dtos.login.ErrorResponseDto;
+import com.korealm.simbache.services.AuditLoggingServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,59 +27,60 @@ El sistema se encarga de devolverle esto al cliente:
 En esta clase, debemos crear un método para cada excepción que queremos manejar a lo largo y ancho del sistema.
  */
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final AuditLoggingServiceImpl auditLoggingService;
+
+    public ErrorResponseDto buildErrorResponse(String message) {
+        return ErrorResponseDto.builder()
+                .message(message)
+                .build();
+    }
 
     /*
-    * Los métodos deben declararse con la anotación ExceptionHandler, y recibe como parametro la clase de la excepcion que
+    * Los métodos deben declararse con la anotación ExceptionHandler, y recibe como parámetro la clase de la excepción que
     * va a manejar. En este caso, quiero que maneje las excepciones de tipo InvalidLoginException.
     *
-    * Esta funcion devuelve un objeto de tipo ResponseEntity (Es un tipo especial de objeto que nos facilita el trabajo, porque
-    * nos permite encapsular nuestro mensaje de error o cualquier otra cosa, más el codigo de error HTTP para los clientes
+    * Esta función devuelve un objeto de tipo ResponseEntity (Es un tipo especial de objeto que nos facilita el trabajo, porque
+    * nos permite encapsular nuestro mensaje de error o cualquier otra cosa, más el código de error HTTP para los clientes
     * que hicieron la solicitud al sistema).
     * */
     @ExceptionHandler(InvalidLoginException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidLogin(InvalidLoginException ex) {
-
-        ErrorResponseDto error = ErrorResponseDto.builder()
-                .message(ex.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    public ResponseEntity<ErrorResponseDto> handleInvalidLogin(InvalidLoginException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(buildErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidLogoutException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidLogout(InvalidLogoutException ex) {
-        ErrorResponseDto error = ErrorResponseDto.builder()
-                .message(ex.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    public ResponseEntity<ErrorResponseDto> handleInvalidLogout(InvalidLogoutException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
     }
 
     // Excepción para cuando el usuario no está autorizado o manda un token inválido
     @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidInsert(UnauthorizedAccessException ex) {
-        ErrorResponseDto error = ErrorResponseDto.builder()
-                .message(ex.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    public ResponseEntity<ErrorResponseDto> handleInvalidInsert(UnauthorizedAccessException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(buildErrorResponse(ex.getMessage()));
     }
 
     // Excepción para cuando el usuario quiere insertar un valor que ya existe en la base de datos.
     @ExceptionHandler(InvalidInsertException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidInsert(InvalidInsertException ex) {
-        ErrorResponseDto error = ErrorResponseDto.builder()
-                .message(ex.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    public ResponseEntity<ErrorResponseDto> handleInvalidInsert(InvalidInsertException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidUpdateException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidUpdate(InvalidUpdateException ex) {
-        ErrorResponseDto error = ErrorResponseDto.builder()
-                .message(ex.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    public ResponseEntity<ErrorResponseDto> handleInvalidUpdate(InvalidUpdateException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserDoesntExistException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNonExistence(UserDoesntExistException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
     }
 
 
@@ -84,11 +88,8 @@ public class GlobalExceptionHandler {
     que no se queden esperando una respuesta para siempre.
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponseDto> handleRuntime(RuntimeException ex) {
-        ErrorResponseDto error = ErrorResponseDto.builder()
-                .message("Unexpected error: " + ex.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    public ResponseEntity<ErrorResponseDto> handleRuntime(RuntimeException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildErrorResponse("Unexpected error: " + ex.getMessage()));
     }
 }
