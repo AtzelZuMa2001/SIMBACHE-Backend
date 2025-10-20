@@ -29,5 +29,7 @@ See the [LICENSE](./LICENSE.txt) file for details.
 
 **This project is not related in any way to the Mexican government.** It is just a college homework, but I wanted to brand it like a real world product.
 
+
 SIMBACHE Copyright © 2025, kosail
+
 With love, from Honduras.

@@ -44,8 +44,9 @@ public class User {
     Al hacerlo, ya podemos hacer unas queries bien chetadas involucrando muchas tablas como si fuera nada.
     */
 
-    @Column(name = "Role_FK", nullable = false)
-    private Integer roleFk;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Role_FK", nullable = false)
+    private UserRole userRole;
 
     @OneToOne(
             mappedBy = "user",

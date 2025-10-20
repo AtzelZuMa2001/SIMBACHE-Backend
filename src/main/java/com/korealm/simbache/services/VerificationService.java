@@ -35,7 +35,7 @@ public class VerificationService {
 
         var user = userRepository.findBySessionToken(sessionToken.get());
 
-        // TODO: Mejorar esta lógica a futuro cuando ya implemente la tabla de UserRoles
-        return user.filter(value -> value.getRoleFk() == 3 ||  value.getRoleFk() == 4).isPresent();
+        // Administradores: por ahora consideramos roles 3 y 4 como admin (ajustar si cambian las reglas)
+        return user.map(u -> u.getUserRole() != null && (u.getUserRole().getRoleId() == 3 || u.getUserRole().getRoleId() == 4)).orElse(false);
     }
 }

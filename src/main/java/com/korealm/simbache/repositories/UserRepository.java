@@ -2,7 +2,9 @@ package com.korealm.simbache.repositories;
 
 import com.korealm.simbache.models.SessionToken;
 import com.korealm.simbache.models.User;
+import com.korealm.simbache.models.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 import java.util.Optional;
 
 /* Los repositorios no son clases, sino que son interfaces que extienden otra interfaz, que ya trae todo hecho.
@@ -34,4 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findBySessionToken(SessionToken sessionToken);
+
+    List<User> findAllByUserRole(UserRole userRole);
+    List<User> findAllByUserRole_RoleId(short roleId);
 }
