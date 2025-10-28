@@ -9,6 +9,8 @@ import com.korealm.simbache.repositories.VehicleTypeRepository;
 import com.korealm.simbache.services.interfaces.VehicleTypeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

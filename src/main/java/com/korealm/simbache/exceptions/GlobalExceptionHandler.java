@@ -4,6 +4,7 @@ import com.korealm.simbache.dtos.login.ErrorResponseDto;
 import com.korealm.simbache.services.AuditLoggingServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -81,6 +82,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleUserNonExistence(UserDoesntExistException ex, HttpServletRequest request) {
         auditLoggingService.logException(request, ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
+    }
+
+    // Esta excepción es lanzada cuando queremos hacer DELETE en un dato que es padre de otros datos en la BD
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDataIntegrityiolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorResponse("Error de integridad de datos: No se puede la operación porque hay datos que dependen de estos"));
     }
 
 
