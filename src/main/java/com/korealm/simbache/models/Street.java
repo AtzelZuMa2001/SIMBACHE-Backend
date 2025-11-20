@@ -9,6 +9,7 @@ import lombok.*;
 public class Street {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "StreetId")
     private Long streetId; // not identity per schema
 

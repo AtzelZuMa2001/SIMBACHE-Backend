@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface ColoniaRepository extends JpaRepository<Colonia, Long> {
     Optional<Colonia> findByColoniaId(Long coloniaId);
     Optional<Colonia> findByColoniaName(String coloniaName);
+    Optional<Colonia> findByColoniaNameAndLocality(String coloniaName, Locality locality);
 
     List<Colonia> findAllByLocality(Locality locality);
     List<Colonia> findAllByLocality_LocalityId(int localityId);
