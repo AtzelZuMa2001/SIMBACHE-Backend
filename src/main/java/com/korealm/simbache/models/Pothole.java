@@ -15,9 +15,13 @@ public class Pothole {
     @Column(name = "PotholeId")
     private Long potholeId;
 
+    @ManyToOne
+    @JoinColumn(name = "ReportByCitizen_FK")
+    private Citizens reportByCitizen; // nullable
+
     @ManyToOne(optional = false)
-    @JoinColumn(name = "ReportedBy_FK", nullable = false)
-    private User reportedBy;
+    @JoinColumn(name = "RegisteredBy_FK", nullable = false)
+    private User registeredBy; // required
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Location_FK", nullable = false)

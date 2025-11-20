@@ -27,20 +27,18 @@ public class Location {
     @JoinColumn(name = "Locality_FK", nullable = false)
     private Locality locality;
 
-    @ManyToOne(optional = true)
+    @ManyToOne()
     @JoinColumn(name = "Colonia_FK")
     private Colonia colonia; // nullable
-
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "Street_FK")
-    private Street street; // nullable
 
     @Column(name = "PostalCode", nullable = false)
     private int postalCode;
 
-    @Column(name = "Latitude", precision = 11, scale = 8)
-    private BigDecimal latitude;
+    @ManyToOne()
+    @JoinColumn(name = "Street_One_FK")
+    private Street streetOne;
 
-    @Column(name = "Longitude", precision = 11, scale = 8)
-    private BigDecimal longitude;
+    @ManyToOne()
+    @JoinColumn(name = "Street_Two_FK")
+    private Street streetTwo;
 }

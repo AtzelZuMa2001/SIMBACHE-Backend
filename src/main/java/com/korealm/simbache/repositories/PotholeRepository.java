@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     Optional<Pothole> findByPotholeId(Long potholeId);
 
-    List<Pothole> findAllByReportedBy(User user);
+    List<Pothole> findAllByRegisteredBy(User user);
+    List<Pothole> findAllByReportByCitizen(Citizens citizen);
     List<Pothole> findAllByLocation(Location location);
     List<Pothole> findAllByCategory(PotholeCategory category);
     List<Pothole> findAllByStatus(PotholeStatus status);

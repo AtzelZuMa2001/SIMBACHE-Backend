@@ -9,14 +9,14 @@ import lombok.*;
 public class Street {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "StreetId")
-    private Long streetId; // not identity per schema
+    private Long streetId;
 
     @Column(name = "StreetName", nullable = false)
     private String streetName;
 
-    @ManyToOne(optional = true)
+    @ManyToOne()
     @JoinColumn(name = "Colonia_FK")
     private Colonia colonia; // nullable
 
