@@ -1,6 +1,6 @@
 package com.korealm.simbache.services;
 
-import com.korealm.simbache.dtos.vehicles.VehicleTypeUpdateDto;
+import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
@@ -9,15 +9,13 @@ import com.korealm.simbache.repositories.VehicleTypeRepository;
 import com.korealm.simbache.services.interfaces.VehicleTypeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
+public class VehicleTypeServiceImpl implements VehicleTypeService {
     private final VehicleTypeRepository vehicleTypeRepository;
     private final VerificationService verificationService;
     private final AuditLoggingServiceImpl auditLoggingService;
@@ -57,7 +55,7 @@ public class VehicleTypeServiceServiceImpl implements VehicleTypeService {
     }
 
     @Override
-    public void updateVehicleType(String token, VehicleTypeUpdateDto updateDto) {
+    public void updateVehicleType(String token, BasicUpdateDto updateDto) {
         if (! verificationService.isUserAdmin(token)) throw new UnauthorizedAccessException("El usuario no tiene permisos para la acción solicitada.");
 
         var vehicle = vehicleTypeRepository

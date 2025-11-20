@@ -1,10 +1,10 @@
-package com.korealm.simbache.dtos.vehicles;
+package com.korealm.simbache.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class VehicleTypeUpdateDto {
+public class BasicUpdateDto {
     @NotBlank
     private String currentName;
 

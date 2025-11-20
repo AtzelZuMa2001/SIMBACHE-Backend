@@ -1,6 +1,6 @@
 package com.korealm.simbache.services.interfaces;
 
-import com.korealm.simbache.dtos.vehicles.VehicleTypeUpdateDto;
+import com.korealm.simbache.dtos.BasicUpdateDto;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public interface VehicleTypeService {
 
     short addVehicleType(String token, String newType);
 
-    void updateVehicleType(String token, VehicleTypeUpdateDto vehicleTypeUpdateDto);
+    void updateVehicleType(String token, BasicUpdateDto basicUpdateDto);
 
     void deleteVehicleType(String token, String typeName);
 }

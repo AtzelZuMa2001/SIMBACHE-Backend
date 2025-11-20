@@ -1,7 +1,7 @@
 package com.korealm.simbache.controllers;
 
-import com.korealm.simbache.dtos.vehicles.VehicleTypeUpdateDto;
-import com.korealm.simbache.services.VehicleTypeServiceServiceImpl;
+import com.korealm.simbache.dtos.BasicUpdateDto;
+import com.korealm.simbache.services.VehicleTypeServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/api/vehicles/type")
 @RequiredArgsConstructor
 public class VehiclesTypeController {
-    private final VehicleTypeServiceServiceImpl service;
+    private final VehicleTypeServiceImpl service;
 
     @GetMapping("/list")
     public ResponseEntity<List<String>> getAll(@RequestHeader("X-Auth-Token") String token) {
@@ -30,7 +30,7 @@ public class VehiclesTypeController {
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> updateVehicleType(@RequestHeader("X-Auth-Token") String token, @Valid @RequestBody VehicleTypeUpdateDto dto) {
+    public ResponseEntity<Void> updateVehicleType(@RequestHeader("X-Auth-Token") String token, @Valid @RequestBody BasicUpdateDto dto) {
         service.updateVehicleType(token, dto);
         return ResponseEntity.ok().build();
     }
