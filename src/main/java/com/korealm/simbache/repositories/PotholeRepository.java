@@ -1,6 +1,8 @@
 package com.korealm.simbache.repositories;
 
 import com.korealm.simbache.models.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +21,6 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     List<Pothole> findAllByStatus(PotholeStatus status);
 
     List<Pothole> findAllByIsActiveTrue();
+    Page<Pothole> findAllByIsActiveTrue(Pageable pageable);
     List<Pothole> findAllByDateReportedBetween(LocalDateTime start, LocalDateTime end);
 }

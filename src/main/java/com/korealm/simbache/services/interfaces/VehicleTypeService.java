@@ -8,8 +8,6 @@ public interface VehicleTypeService {
     List<String> getAllVehicleTypes(String token);
 
     short addVehicleType(String token, String newType);
-
     void updateVehicleType(String token, BasicUpdateDto basicUpdateDto);
-
     void deleteVehicleType(String token, String typeName);
 }

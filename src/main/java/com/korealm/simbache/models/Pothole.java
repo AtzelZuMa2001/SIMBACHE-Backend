@@ -17,11 +17,11 @@ public class Pothole {
 
     @ManyToOne
     @JoinColumn(name = "ReportByCitizen_FK")
-    private Citizens reportByCitizen; // nullable
+    private Citizens reportByCitizen;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "RegisteredBy_FK", nullable = false)
-    private User registeredBy; // required
+    private User registeredBy;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Location_FK", nullable = false)
