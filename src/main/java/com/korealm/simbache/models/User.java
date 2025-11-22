@@ -3,6 +3,8 @@ package com.korealm.simbache.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "Users")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -35,6 +37,9 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private Long phoneNumber;
+
+    @Column(name = "RegistrationDate", nullable = false)
+    private LocalDateTime registrationDate;
 
     @Column(nullable = false)
     private boolean status = true; // maps bit(1)
