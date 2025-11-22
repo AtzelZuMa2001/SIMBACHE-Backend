@@ -3,8 +3,6 @@ package com.korealm.simbache.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "Locations")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -33,6 +31,10 @@ public class Location {
 
     @Column(name = "PostalCode", nullable = false)
     private int postalCode;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "MainStreet_FK", nullable = false)
+    private Street mainStreet;
 
     @ManyToOne()
     @JoinColumn(name = "Street_One_FK")

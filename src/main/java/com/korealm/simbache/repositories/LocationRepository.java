@@ -25,6 +25,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     List<Location> findAllByColonia(Colonia colonia);
     List<Location> findAllByColonia_ColoniaId(Long coloniaId);
 
-    List<Location> findAllByStreet(Street street);
-    List<Location> findAllByStreet_StreetId(Long streetId);
+    List<Location> findAllByMainStreet(Street street);
+    List<Location> findAllByMainStreet_StreetId(Long streetId);
 }
