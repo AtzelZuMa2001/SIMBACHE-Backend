@@ -2,6 +2,7 @@ package com.korealm.simbache.controllers.geography;
 
 
 import com.korealm.simbache.dtos.BasicUpdateDto;
+import com.korealm.simbache.dtos.geography.StateDto;
 import com.korealm.simbache.services.geography.StatesServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/geography/states")
@@ -18,7 +19,7 @@ public class StatesController {
     private final StatesServiceImpl service;
 
     @GetMapping("/list")
-    public ResponseEntity<Map<Short, String>> getStates(@RequestHeader("X-Auth-Token") String token) {
+    public ResponseEntity<List<StateDto>> getStates(@RequestHeader("X-Auth-Token") String token) {
         var response = service.getAllStates(token);
         return ResponseEntity.ok(response);
     }

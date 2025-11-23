@@ -2,11 +2,12 @@ package com.korealm.simbache.services.interfaces;
 
 import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.dtos.geography.LocalityCreateDto;
+import com.korealm.simbache.dtos.geography.LocalityDto;
 
-import java.util.Map;
+import java.util.List;
 
 public interface LocalitiesService {
-    Map<Integer, String> getLocalitiesByMunicipality(String token, short municipalityId);
+    List<LocalityDto> getLocalitiesByMunicipality(String token, short municipalityId);
 
     int addLocality(String token, LocalityCreateDto dto);
     void updateLocality(String token, BasicUpdateDto dto);

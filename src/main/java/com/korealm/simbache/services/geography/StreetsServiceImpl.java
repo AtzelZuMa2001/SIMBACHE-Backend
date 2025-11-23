@@ -2,6 +2,7 @@ package com.korealm.simbache.services.geography;
 
 import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.dtos.geography.StreetCreateDto;
+import com.korealm.simbache.dtos.geography.StreetDto;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
@@ -16,7 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,7 @@ public class StreetsServiceImpl implements StreetsService {
     private final AuditLoggingService auditLoggingService;
 
     @Override
-    public Map<Long, String> getStreetsByColonia(String token, Long coloniaId) {
+    public List<StreetDto> getStreetsByColonia(String token, Long coloniaId) {
         if (verificationService.isUserUnauthorized(token))
             throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
 
@@ -44,11 +45,12 @@ public class StreetsServiceImpl implements StreetsService {
 
         return streets
                 .stream()
-                .collect(Collectors.toMap(Street::getStreetId, Street::getStreetName));
+                .map(StreetDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Map<Long, String> getStreetsByLocality(String token, int localityId) {
+    public List<StreetDto> getStreetsByLocality(String token, int localityId) {
         if (verificationService.isUserUnauthorized(token))
             throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
 
@@ -63,7 +65,8 @@ public class StreetsServiceImpl implements StreetsService {
 
         return streets
                 .stream()
-                .collect(Collectors.toMap(Street::getStreetId, Street::getStreetName));
+                .map(StreetDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override

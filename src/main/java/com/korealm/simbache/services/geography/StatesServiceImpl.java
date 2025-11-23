@@ -1,6 +1,7 @@
 package com.korealm.simbache.services.geography;
 
 import com.korealm.simbache.dtos.BasicUpdateDto;
+import com.korealm.simbache.dtos.geography.StateDto;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
@@ -13,7 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +25,7 @@ public class StatesServiceImpl implements StatesService {
     private final AuditLoggingService auditLoggingService;
 
     @Override
-    public Map<Short, String> getAllStates(String token) {
+    public List<StateDto> getAllStates(String token) {
         if (verificationService.isUserUnauthorized(token)) throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
 
         var result = stateRepository.findAll();
@@ -36,7 +37,8 @@ public class StatesServiceImpl implements StatesService {
 
         return result
                 .stream()
-                .collect(Collectors.toMap(State::getStateId, State::getStateName));
+                .map(StateDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override

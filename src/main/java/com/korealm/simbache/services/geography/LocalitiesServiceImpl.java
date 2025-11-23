@@ -2,6 +2,7 @@ package com.korealm.simbache.services.geography;
 
 import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.dtos.geography.LocalityCreateDto;
+import com.korealm.simbache.dtos.geography.LocalityDto;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ public class LocalitiesServiceImpl implements LocalitiesService {
     private final AuditLoggingService auditLoggingService;
 
     @Override
-    public Map<Integer, String> getLocalitiesByMunicipality(String token, short municipalityId) {
+    public List<LocalityDto> getLocalitiesByMunicipality(String token, short municipalityId) {
         if (verificationService.isUserUnauthorized(token))
             throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
 
@@ -42,7 +44,8 @@ public class LocalitiesServiceImpl implements LocalitiesService {
 
         return localities
                 .stream()
-                .collect(Collectors.toMap(Locality::getLocalityId, Locality::getLocalityName));
+                .map(LocalityDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override

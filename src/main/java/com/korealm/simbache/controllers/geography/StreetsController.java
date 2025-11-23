@@ -2,6 +2,7 @@ package com.korealm.simbache.controllers.geography;
 
 import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.dtos.geography.StreetCreateDto;
+import com.korealm.simbache.dtos.geography.StreetDto;
 import com.korealm.simbache.services.geography.StreetsServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/geography/streets")
@@ -18,7 +19,7 @@ public class StreetsController {
     private final StreetsServiceImpl service;
 
     @GetMapping("/list/by-colonia")
-    public ResponseEntity<Map<Long, String>> getByColonia(
+    public ResponseEntity<List<StreetDto>> getByColonia(
             @RequestHeader("X-Auth-Token") String token,
             @RequestParam Long coloniaId
     ) {
@@ -27,7 +28,7 @@ public class StreetsController {
     }
 
     @GetMapping("/list/by-locality")
-    public ResponseEntity<Map<Long, String>> getByLocality(
+    public ResponseEntity<List<StreetDto>> getByLocality(
             @RequestHeader("X-Auth-Token") String token,
             @RequestParam int localityId
     ) {
