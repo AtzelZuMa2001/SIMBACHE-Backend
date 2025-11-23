@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 public class PotholeResponseDto {
     private Long potholeId;
-    private Long reportByCitizenId; // nullable
-    private Long registeredByUserId; // not null
-    private Long locationId; // not null
-    private Short categoryId; // not null
+    private ReporterCitizenDto reporterCitizen; // nullable
+    private RegisteredUserDto registeredByUser; // not null
+    private LocationDetailsDto location; // not null
+    private CategoryDetailsDto category; // not null
     private Short statusId; // not null
     private String photoUrl; // nullable
     private LocalDateTime dateReported; // not null

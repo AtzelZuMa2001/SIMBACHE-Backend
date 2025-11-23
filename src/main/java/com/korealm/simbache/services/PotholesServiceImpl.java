@@ -175,12 +175,49 @@ public class PotholesServiceImpl implements PotholesService {
     }
 
     private PotholeResponseDto toDto(Pothole p) {
+        // Reporter citizen
+        var reporter = p.getReportByCitizen() == null ? null : com.korealm.simbache.dtos.potholes.ReporterCitizenDto.builder()
+                .firstName(p.getReportByCitizen().getFirstName())
+                .lastName(p.getReportByCitizen().getLastName())
+                .email(p.getReportByCitizen().getEmail())
+                .phoneNumber(p.getReportByCitizen().getPhoneNumber())
+                .build();
+
+        // Registered user
+        var user = p.getRegisteredBy();
+        var registeredBy = user == null ? null : com.korealm.simbache.dtos.potholes.RegisteredUserDto.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .roleName(user.getUserRole() != null ? user.getUserRole().getRoleName() : null)
+                .build();
+
+        // Location details
+        var loc = p.getLocation();
+        var locationDetails = loc == null ? null : com.korealm.simbache.dtos.potholes.LocationDetailsDto.builder()
+                .stateName(loc.getState() != null ? loc.getState().getStateName() : null)
+                .municipalityName(loc.getMunicipality() != null ? loc.getMunicipality().getMunicipalityName() : null)
+                .localityName(loc.getLocality() != null ? loc.getLocality().getLocalityName() : null)
+                .coloniaName(loc.getColonia() != null ? loc.getColonia().getColoniaName() : null)
+                .postalCode(loc.getPostalCode())
+                .mainStreetName(loc.getMainStreet() != null ? loc.getMainStreet().getStreetName() : null)
+                .streetOneName(loc.getStreetOne() != null ? loc.getStreetOne().getStreetName() : null)
+                .streetTwoName(loc.getStreetTwo() != null ? loc.getStreetTwo().getStreetName() : null)
+                .build();
+
+        // Category details
+        var cat = p.getCategory();
+        var categoryDetails = cat == null ? null : com.korealm.simbache.dtos.potholes.CategoryDetailsDto.builder()
+                .categoryName(cat.getName())
+                .description(cat.getDescription())
+                .priorityLevel(cat.getPriorityLevel())
+                .build();
+
         return PotholeResponseDto.builder()
                 .potholeId(p.getPotholeId())
-                .reportByCitizenId(p.getReportByCitizen() != null ? p.getReportByCitizen().getCitizenId() : null)
-                .registeredByUserId(p.getRegisteredBy() != null ? p.getRegisteredBy().getUserId() : null)
-                .locationId(p.getLocation() != null ? p.getLocation().getLocationId() : null)
-                .categoryId(p.getCategory() != null ? p.getCategory().getCategoryId() : null)
+                .reporterCitizen(reporter)
+                .registeredByUser(registeredBy)
+                .location(locationDetails)
+                .category(categoryDetails)
                 .statusId(p.getStatus() != null ? p.getStatus().getStatusId() : null)
                 .photoUrl(p.getPhotoUrl())
                 .dateReported(p.getDateReported())
