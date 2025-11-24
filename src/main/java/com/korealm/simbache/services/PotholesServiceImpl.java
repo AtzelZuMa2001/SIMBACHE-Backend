@@ -23,7 +23,6 @@ import java.util.List;
 public class PotholesServiceImpl implements PotholesService {
     private final PotholeRepository potholeRepository;
     private final CitizensRepository citizensRepository;
-    private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final PotholeCategoryRepository potholeCategoryRepository;
     private final PotholeStatusRepository potholeStatusRepository;
@@ -218,7 +217,7 @@ public class PotholesServiceImpl implements PotholesService {
                 .registeredByUser(registeredBy)
                 .location(locationDetails)
                 .category(categoryDetails)
-                .statusId(p.getStatus() != null ? p.getStatus().getStatusId() : null)
+                .status(p.getStatus().getStatusName())
                 .photoUrl(p.getPhotoUrl())
                 .dateReported(p.getDateReported())
                 .dateValidated(p.getDateValidated())

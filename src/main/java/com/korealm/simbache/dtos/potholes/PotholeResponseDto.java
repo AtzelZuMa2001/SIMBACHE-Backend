@@ -15,7 +15,7 @@ public class PotholeResponseDto {
     private RegisteredUserDto registeredByUser; // not null
     private LocationDetailsDto location; // not null
     private CategoryDetailsDto category; // not null
-    private Short statusId; // not null
+    private String status; // not null
     private String photoUrl; // nullable
     private LocalDateTime dateReported; // not null
     private LocalDateTime dateValidated; // nullable
