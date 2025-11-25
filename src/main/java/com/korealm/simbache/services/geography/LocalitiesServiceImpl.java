@@ -1,13 +1,14 @@
 package com.korealm.simbache.services.geography;
 
-import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.dtos.geography.LocalityCreateDto;
 import com.korealm.simbache.dtos.geography.LocalityDto;
+import com.korealm.simbache.dtos.geography.LocalityUpdateDto;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
 import com.korealm.simbache.models.Locality;
 import com.korealm.simbache.repositories.LocalityRepository;
+import com.korealm.simbache.repositories.LocalityTypeRepository;
 import com.korealm.simbache.repositories.MunicipalityRepository;
 import com.korealm.simbache.services.VerificationService;
 import com.korealm.simbache.services.interfaces.AuditLoggingService;
@@ -17,13 +18,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class LocalitiesServiceImpl implements LocalitiesService {
     private final LocalityRepository localityRepository;
+    private final LocalityTypeRepository localityTypeRepository;
     private final MunicipalityRepository municipalityRepository;
     private final VerificationService verificationService;
     private final AuditLoggingService auditLoggingService;
@@ -56,12 +57,17 @@ public class LocalitiesServiceImpl implements LocalitiesService {
         var municipality = municipalityRepository.findByMunicipalityId(dto.getMunicipalityId())
                 .orElseThrow(() -> new InvalidInsertException("El municipio especificado no existe. No es posible crear la localidad."));
 
-        if (localityRepository.findByLocalityName(dto.getLocalityName()).isPresent())
-            throw new InvalidInsertException("La localidad ya existe. No es posible crearla de nuevo.");
+        if (localityRepository
+                .findAllByLocalityNameAndMunicipality_MunicipalityId(dto.getLocalityName(), dto.getMunicipalityId())
+                .isPresent()
+        ) throw new InvalidInsertException("La localidad " + dto.getLocalityName() + " ya existe en este municipio. No es posible crearla de nuevo.");
+
+        var localityType = localityTypeRepository.findById(dto.getLocalityType())
+                .orElseThrow(() -> new InvalidInsertException("El tipo de localidad especificada no existe. No es posible crear la localidad."));
 
         var locality = Locality.builder()
                 .localityName(dto.getLocalityName())
-                .type(dto.getType())
+                .localityType(localityType)
                 .municipality(municipality)
                 .build();
 
@@ -77,19 +83,27 @@ public class LocalitiesServiceImpl implements LocalitiesService {
     }
 
     @Override
-    public void updateLocality(String token, BasicUpdateDto dto) {
+    public void updateLocality(String token, LocalityUpdateDto dto) {
         if (!verificationService.isUserAdmin(token))
             throw new UnauthorizedAccessException("El usuario no tiene permisos para la acción solicitada.");
 
-        var locality = localityRepository.findByLocalityName(dto.getCurrentName())
+        var locality = localityRepository.findByLocalityId(dto.getLocalityId())
                 .orElseThrow(() -> new InvalidUpdateException("La localidad no existe. No es posible actualizarla."));
 
-        locality.setLocalityName(dto.getNewName());
+        if (dto.getLocalityName() != null && !dto.getLocalityName().isBlank()) locality.setLocalityName(dto.getLocalityName());
+        if (dto.getPostalCode() != null) locality.setPostalCode(dto.getPostalCode());
+        if (dto.getType() != null) {
+            var localityType = localityTypeRepository.findById(dto.getType())
+                    .orElseThrow(() -> new InvalidInsertException("El tipo de localidad especificada no existe. No es posible actualizar el tipo de localidad."));
+
+            locality.setLocalityType(localityType);
+        }
+
         localityRepository.save(locality);
 
         verificationService.getUserByToken(token).ifPresent(u ->
                 auditLoggingService.log(u, "ACTUALIZACION_LOCALIDAD", "El usuario " + u.getUsername() +
-                        " actualizó la localidad de '" + dto.getCurrentName() + "' a '" + dto.getNewName() + "'.")
+                        " actualizó la localidad de '" + dto.getLocalityName() + "'.")
         );
     }
 

@@ -7,7 +7,6 @@ import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
 import com.korealm.simbache.models.Street;
-import com.korealm.simbache.repositories.ColoniaRepository;
 import com.korealm.simbache.repositories.LocalityRepository;
 import com.korealm.simbache.repositories.StreetRepository;
 import com.korealm.simbache.services.VerificationService;
@@ -25,29 +24,8 @@ import java.util.stream.Collectors;
 public class StreetsServiceImpl implements StreetsService {
     private final StreetRepository streetRepository;
     private final LocalityRepository localityRepository;
-    private final ColoniaRepository coloniaRepository;
     private final VerificationService verificationService;
     private final AuditLoggingService auditLoggingService;
-
-    @Override
-    public List<StreetDto> getStreetsByColonia(String token, Long coloniaId) {
-        if (verificationService.isUserUnauthorized(token))
-            throw new UnauthorizedAccessException("El usuario no está autenticado. Inicia sesión para poder hacer solicitudes.");
-
-        var streets = streetRepository.findAllByColonia_ColoniaId(coloniaId);
-
-        // Audit log: streets by colonia
-        verificationService.getUserByToken(token).ifPresent(u ->
-                auditLoggingService.log(u, "CONSULTA_CALLES_COLONIA", "El usuario " + u.getUsername() +
-                        " consultó la lista de calles para la colonia " + coloniaId +
-                        " (" + streets.size() + ") elementos).")
-        );
-
-        return streets
-                .stream()
-                .map(StreetDto::new)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public List<StreetDto> getStreetsByLocality(String token, int localityId) {
@@ -80,12 +58,12 @@ public class StreetsServiceImpl implements StreetsService {
         if (streetRepository.findByStreetNameAndLocality(dto.getStreetName(), locality).isPresent()) {
             throw new InvalidInsertException("La calle con ese ID ya existe. No es posible crearla de nuevo.");
         }
-
-        var colonia = dto.getColoniaId() == null ? null : coloniaRepository.findByColoniaId(dto.getColoniaId())
-                .orElseThrow(() -> new InvalidInsertException("La colonia especificada no existe."));
-
-        if (colonia != null && colonia.getLocality().getLocalityId() != locality.getLocalityId())
-            throw new InvalidInsertException("La colonia especificada no pertenece a la misma localidad.");
+//
+//        var colonia = dto.getColoniaId() == null ? null : coloniaRepository.findByColoniaId(dto.getColoniaId())
+//                .orElseThrow(() -> new InvalidInsertException("La colonia especificada no existe."));
+//
+//        if (colonia != null && colonia.getLocality().getLocalityId() != locality.getLocalityId())
+//            throw new InvalidInsertException("La colonia especificada no pertenece a la misma localidad.");
 
         // optional duplicate name per-locality check
         if (streetRepository.findByStreetNameAndLocality(dto.getStreetName(), locality).isPresent())
@@ -94,7 +72,6 @@ public class StreetsServiceImpl implements StreetsService {
         var street = Street.builder()
                 .streetName(dto.getStreetName())
                 .locality(locality)
-                .colonia(colonia)
                 .build();
 
         var saved = streetRepository.save(street);
@@ -102,8 +79,7 @@ public class StreetsServiceImpl implements StreetsService {
         verificationService.getUserByToken(token).ifPresent(u ->
                 auditLoggingService.log(u, "CREACION_CALLE", "El usuario " + u.getUsername() +
                         " creó la calle '" + dto.getStreetName() + "' con id " + saved.getStreetId() +
-                        " para la localidad " + locality.getLocalityId() +
-                        (colonia != null ? (", colonia " + colonia.getColoniaId()) : "") + ".")
+                        " para la localidad " + locality.getLocalityId() + ".")
         );
 
         return saved.getStreetId();

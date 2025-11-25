@@ -15,5 +15,5 @@ public class LocalityCreateDto {
     private String localityName;
 
     @NotBlank
-    private String type;
+    private Short localityType;
 }

@@ -9,7 +9,7 @@ import lombok.*;
 public class SessionToken {
 
     @Id
-    @Column(name = "TokenId", length = 128)
+    @Column(name = "TokenId", length = 64)
     private String tokenId;   // the random UUID/session string
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)

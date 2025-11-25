@@ -12,6 +12,6 @@ public class InspectionStatus {
     @Column(name = "StatusId")
     private short statusId;
 
-    @Column(name = "StatusName", nullable = false, length = 64)
+    @Column(name = "StatusName", nullable = false, length = 64, unique = true)
     private String statusName;
 }

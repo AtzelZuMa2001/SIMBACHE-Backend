@@ -18,15 +18,6 @@ import java.util.List;
 public class StreetsController {
     private final StreetsServiceImpl service;
 
-    @GetMapping("/list/by-colonia")
-    public ResponseEntity<List<StreetDto>> getByColonia(
-            @RequestHeader("X-Auth-Token") String token,
-            @RequestParam Long coloniaId
-    ) {
-        var response = service.getStreetsByColonia(token, coloniaId);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/list/by-locality")
     public ResponseEntity<List<StreetDto>> getByLocality(
             @RequestHeader("X-Auth-Token") String token,

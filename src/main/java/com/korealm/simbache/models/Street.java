@@ -9,16 +9,12 @@ import lombok.*;
 public class Street {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "StreetId")
     private Long streetId;
 
     @Column(name = "StreetName", nullable = false)
     private String streetName;
-
-    @ManyToOne()
-    @JoinColumn(name = "Colonia_FK")
-    private Colonia colonia; // nullable
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Locality_FK", nullable = false)

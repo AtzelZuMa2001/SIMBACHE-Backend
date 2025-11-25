@@ -25,13 +25,6 @@ public class Location {
     @JoinColumn(name = "Locality_FK", nullable = false)
     private Locality locality;
 
-    @ManyToOne()
-    @JoinColumn(name = "Colonia_FK")
-    private Colonia colonia; // nullable
-
-    @Column(name = "PostalCode", nullable = false)
-    private int postalCode;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "MainStreet_FK", nullable = false)
     private Street mainStreet;

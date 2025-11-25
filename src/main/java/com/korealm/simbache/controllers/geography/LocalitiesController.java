@@ -1,8 +1,8 @@
 package com.korealm.simbache.controllers.geography;
 
-import com.korealm.simbache.dtos.BasicUpdateDto;
 import com.korealm.simbache.dtos.geography.LocalityCreateDto;
 import com.korealm.simbache.dtos.geography.LocalityDto;
+import com.korealm.simbache.dtos.geography.LocalityUpdateDto;
 import com.korealm.simbache.services.geography.LocalitiesServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/geography/localities")
@@ -41,7 +40,7 @@ public class LocalitiesController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> updateLocality(
             @RequestHeader("X-Auth-Token") String token,
-            @Valid @RequestBody BasicUpdateDto dto
+            @Valid @RequestBody LocalityUpdateDto dto
     ) {
         service.updateLocality(token, dto);
         return ResponseEntity.ok().build();

@@ -11,8 +11,6 @@ import java.util.Optional;
 public interface LocationRepository extends JpaRepository<Location, Long> {
     Optional<Location> findByLocationId(Long locationId);
 
-    List<Location> findAllByPostalCode(int postalCode);
-
     List<Location> findAllByState(State state);
     List<Location> findAllByState_StateId(short stateId);
 
@@ -21,9 +19,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     List<Location> findAllByLocality(Locality locality);
     List<Location> findAllByLocality_LocalityId(int localityId);
-
-    List<Location> findAllByColonia(Colonia colonia);
-    List<Location> findAllByColonia_ColoniaId(Long coloniaId);
 
     List<Location> findAllByMainStreet(Street street);
     List<Location> findAllByMainStreet_StreetId(Long streetId);

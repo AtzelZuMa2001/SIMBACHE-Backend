@@ -13,9 +13,10 @@ public class LocalityDto {
         this.localityName = locality.getLocalityName();
     }
 
-    @NotBlank
     private int localityId;
 
     @NotBlank
     private String localityName;
+
+    private int postalCode;
 }

@@ -7,7 +7,6 @@ import com.korealm.simbache.dtos.geography.StreetDto;
 import java.util.List;
 
 public interface StreetsService {
-    List<StreetDto> getStreetsByColonia(String token, Long coloniaId);
     List<StreetDto> getStreetsByLocality(String token, int localityId);
 
     long addStreet(String token, StreetCreateDto dto);

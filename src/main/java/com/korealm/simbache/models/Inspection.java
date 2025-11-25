@@ -44,6 +44,6 @@ public class Inspection {
     @Column(name = "PhotoUrl", nullable = false, length = 4096)
     private String photoUrl;
 
-    @Column(name = "isActive", nullable = false)
+    @Column(name = "IsActive", nullable = false)
     private boolean isActive = true;
 }

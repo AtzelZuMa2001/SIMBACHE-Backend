@@ -196,8 +196,6 @@ public class PotholesServiceImpl implements PotholesService {
                 .stateName(loc.getState() != null ? loc.getState().getStateName() : null)
                 .municipalityName(loc.getMunicipality() != null ? loc.getMunicipality().getMunicipalityName() : null)
                 .localityName(loc.getLocality() != null ? loc.getLocality().getLocalityName() : null)
-                .coloniaName(loc.getColonia() != null ? loc.getColonia().getColoniaName() : null)
-                .postalCode(loc.getPostalCode())
                 .mainStreetName(loc.getMainStreet() != null ? loc.getMainStreet().getStreetName() : null)
                 .streetOneName(loc.getStreetOne() != null ? loc.getStreetOne().getStreetName() : null)
                 .streetTwoName(loc.getStreetTwo() != null ? loc.getStreetTwo().getStreetName() : null)

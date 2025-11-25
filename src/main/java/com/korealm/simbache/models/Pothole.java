@@ -47,6 +47,6 @@ public class Pothole {
     @Column(name = "DateClosed")
     private LocalDateTime dateClosed;
 
-    @Column(name = "isActive", nullable = false)
+    @Column(name = "IsActive", nullable = false)
     private boolean isActive = true;
 }

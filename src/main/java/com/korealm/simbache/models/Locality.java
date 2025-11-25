@@ -22,11 +22,12 @@ public class Locality {
     @JoinColumn(name = "Municipality_FK", nullable = false)
     private Municipality municipality;
 
-    @Column(name = "Type", nullable = false)
-    private String type;
+    @Column(name = "PostalCode", nullable = false)
+    private int postalCode;
 
-    @OneToMany(mappedBy = "locality")
-    private List<Colonia> colonias;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Type_FK", nullable = false)
+    private LocalityType localityType;
 
     @OneToMany(mappedBy = "locality")
     private List<Street> streets;
