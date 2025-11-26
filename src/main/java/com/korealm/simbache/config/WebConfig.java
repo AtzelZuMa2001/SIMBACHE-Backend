@@ -1,4 +1,4 @@
-package com.korealm.simbache.configurations;
+package com.korealm.simbache.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

@@ -84,6 +84,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNonExistence(ResourceNotFoundException ex, HttpServletRequest request) {
+        auditLoggingService.logException(request, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(ex.getMessage()));
+    }
+
     // Esta excepción es lanzada cuando queremos hacer DELETE en un dato que es padre de otros datos en la BD
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleDataIntegrityiolation(DataIntegrityViolationException ex, HttpServletRequest request) {
