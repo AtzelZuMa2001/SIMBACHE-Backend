@@ -1,8 +1,6 @@
 package com.korealm.simbache.services;
 
-import com.korealm.simbache.dtos.potholes.PotholeCreateDto;
-import com.korealm.simbache.dtos.potholes.PotholeResponseDto;
-import com.korealm.simbache.dtos.potholes.PotholeUpdateDto;
+import com.korealm.simbache.dtos.potholes.*;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
@@ -175,7 +173,7 @@ public class PotholesServiceImpl implements PotholesService {
 
     private PotholeResponseDto toDto(Pothole p) {
         // Reporter citizen
-        var reporter = p.getReportByCitizen() == null ? null : com.korealm.simbache.dtos.potholes.ReporterCitizenDto.builder()
+        var reporter = p.getReportByCitizen() == null ? null : ReporterCitizenDto.builder()
                 .firstName(p.getReportByCitizen().getFirstName())
                 .lastName(p.getReportByCitizen().getLastName())
                 .email(p.getReportByCitizen().getEmail())
@@ -184,7 +182,7 @@ public class PotholesServiceImpl implements PotholesService {
 
         // Registered user
         var user = p.getRegisteredBy();
-        var registeredBy = user == null ? null : com.korealm.simbache.dtos.potholes.RegisteredUserDto.builder()
+        var registeredBy = user == null ? null : RegisteredUserDto.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .roleName(user.getUserRole() != null ? user.getUserRole().getRoleName() : null)
@@ -192,10 +190,11 @@ public class PotholesServiceImpl implements PotholesService {
 
         // Location details
         var loc = p.getLocation();
-        var locationDetails = loc == null ? null : com.korealm.simbache.dtos.potholes.LocationDetailsDto.builder()
+        var locationDetails = loc == null ? null : LocationDetailsDto.builder()
                 .stateName(loc.getState() != null ? loc.getState().getStateName() : null)
                 .municipalityName(loc.getMunicipality() != null ? loc.getMunicipality().getMunicipalityName() : null)
                 .localityName(loc.getLocality() != null ? loc.getLocality().getLocalityName() : null)
+                .postalCode(loc.getLocality().getPostalCode())
                 .mainStreetName(loc.getMainStreet() != null ? loc.getMainStreet().getStreetName() : null)
                 .streetOneName(loc.getStreetOne() != null ? loc.getStreetOne().getStreetName() : null)
                 .streetTwoName(loc.getStreetTwo() != null ? loc.getStreetTwo().getStreetName() : null)
@@ -203,7 +202,7 @@ public class PotholesServiceImpl implements PotholesService {
 
         // Category details
         var cat = p.getCategory();
-        var categoryDetails = cat == null ? null : com.korealm.simbache.dtos.potholes.CategoryDetailsDto.builder()
+        var categoryDetails = cat == null ? null : CategoryDetailsDto.builder()
                 .categoryName(cat.getName())
                 .description(cat.getDescription())
                 .priorityLevel(cat.getPriorityLevel())
