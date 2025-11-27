@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class PotholeCreateDto {
-    // Optional: the citizen who reported it in case it was a citizen. If it was reported by an employee or whatever, then it is null.
-    private Long reportByCitizenId;
+    // Optional: the citizens who reported it in case it was a citizens. If it was reported by an employee or whatever, then it is null.
+    private Long reporterCitizenId;
 
     @NotNull
     private Long locationId;

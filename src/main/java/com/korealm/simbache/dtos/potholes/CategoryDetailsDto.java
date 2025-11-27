@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDetailsDto {
+    private Short categoryId;
     private String categoryName;
     private String description;
     private int priorityLevel;

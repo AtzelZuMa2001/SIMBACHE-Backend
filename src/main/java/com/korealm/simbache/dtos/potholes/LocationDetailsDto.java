@@ -1,5 +1,9 @@
 package com.korealm.simbache.dtos.potholes;
 
+import com.korealm.simbache.dtos.geography.LocalityDto;
+import com.korealm.simbache.dtos.geography.MunicipalityDto;
+import com.korealm.simbache.dtos.geography.StateDto;
+import com.korealm.simbache.dtos.geography.StreetDto;
 import lombok.*;
 
 @Getter
@@ -8,12 +12,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocationDetailsDto {
-    private String stateName;
-    private String municipalityName;
-    private String localityName;
-    private String coloniaName; // nullable
+    private long locationId;
     private int postalCode;
-    private String mainStreetName;
-    private String streetOneName; // nullable
-    private String streetTwoName; // nullable
+    private StateDto state;
+    private MunicipalityDto municipality;
+    private LocalityDto locality;
+    private StreetDto mainStreet;
+    private StreetDto streetOne; // nullable
+    private StreetDto streetTwo; // nullable
 }

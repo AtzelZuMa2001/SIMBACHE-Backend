@@ -45,11 +45,15 @@ public class LoginServiceImpl implements LoginService {
         // Log de auditoría
         auditLoggingService.log(user, "INICIO_SESION", "El usuario " + user.getUsername() + " inició sesión correctamente.");
 
+        var userRoleId = user.getUserRole().getRoleId();
+        boolean isAdmin = userRoleId == 3 || userRoleId == 4;
+
         // 5. Construir el objeto que vamos a enviar de respuesta de regreso al cliente que hizo la petición de login.
         return LoginResponseDto.builder()
                 .token(newToken.getTokenId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .isAdmin(isAdmin)
                 .build();
     }
 
