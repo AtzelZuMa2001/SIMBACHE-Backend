@@ -178,8 +178,11 @@ public class PotholesServiceImpl implements PotholesService {
     private PotholeResponseDto toDto(Pothole p) {
         // Reporter citizens
         var reporter = p.getReportByCitizen() == null ? null : ReporterCitizenDto.builder()
+                .citizenId(p.getReportByCitizen().getCitizenId())
                 .firstName(p.getReportByCitizen().getFirstName())
+                .middleName(p.getReportByCitizen().getMiddleName())
                 .lastName(p.getReportByCitizen().getLastName())
+                .secondLastName(p.getReportByCitizen().getSecondLastName())
                 .email(p.getReportByCitizen().getEmail())
                 .phoneNumber(p.getReportByCitizen().getPhoneNumber())
                 .build();
