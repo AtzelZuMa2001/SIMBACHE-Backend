@@ -1,5 +1,9 @@
 package com.korealm.simbache.services;
 
+import com.korealm.simbache.dtos.geography.LocalityDto;
+import com.korealm.simbache.dtos.geography.MunicipalityDto;
+import com.korealm.simbache.dtos.geography.StateDto;
+import com.korealm.simbache.dtos.geography.StreetDto;
 import com.korealm.simbache.dtos.potholes.*;
 import com.korealm.simbache.exceptions.InvalidInsertException;
 import com.korealm.simbache.exceptions.InvalidUpdateException;
@@ -96,7 +100,7 @@ public class PotholesServiceImpl implements PotholesService {
         var status = potholeStatusRepository.findByStatusId(dto.getStatusId())
                 .orElseThrow(() -> new InvalidInsertException("El estatus especificado no existe."));
 
-        var citizen = dto.getReportByCitizenId() == null ? null : citizensRepository.findByCitizenId(dto.getReportByCitizenId())
+        var citizen = dto.getReporterCitizenId() == null ? null : citizensRepository.findByCitizenId(dto.getReporterCitizenId())
                 .orElseThrow(() -> new InvalidInsertException("El ciudadano que reporta no existe."));
 
         var pothole = Pothole.builder()
@@ -172,10 +176,13 @@ public class PotholesServiceImpl implements PotholesService {
     }
 
     private PotholeResponseDto toDto(Pothole p) {
-        // Reporter citizen
+        // Reporter citizens
         var reporter = p.getReportByCitizen() == null ? null : ReporterCitizenDto.builder()
+                .citizenId(p.getReportByCitizen().getCitizenId())
                 .firstName(p.getReportByCitizen().getFirstName())
+                .middleName(p.getReportByCitizen().getMiddleName())
                 .lastName(p.getReportByCitizen().getLastName())
+                .secondLastName(p.getReportByCitizen().getSecondLastName())
                 .email(p.getReportByCitizen().getEmail())
                 .phoneNumber(p.getReportByCitizen().getPhoneNumber())
                 .build();
@@ -191,18 +198,20 @@ public class PotholesServiceImpl implements PotholesService {
         // Location details
         var loc = p.getLocation();
         var locationDetails = loc == null ? null : LocationDetailsDto.builder()
-                .stateName(loc.getState() != null ? loc.getState().getStateName() : null)
-                .municipalityName(loc.getMunicipality() != null ? loc.getMunicipality().getMunicipalityName() : null)
-                .localityName(loc.getLocality() != null ? loc.getLocality().getLocalityName() : null)
+                .locationId(loc.getLocationId())
+                .state(loc.getState() != null ? new StateDto(loc.getState()) : null)
+                .municipality(loc.getMunicipality() != null ? new MunicipalityDto(loc.getMunicipality()) : null)
+                .locality(loc.getLocality() != null ? new LocalityDto(loc.getLocality()) : null)
                 .postalCode(loc.getLocality().getPostalCode())
-                .mainStreetName(loc.getMainStreet() != null ? loc.getMainStreet().getStreetName() : null)
-                .streetOneName(loc.getStreetOne() != null ? loc.getStreetOne().getStreetName() : null)
-                .streetTwoName(loc.getStreetTwo() != null ? loc.getStreetTwo().getStreetName() : null)
+                .mainStreet(loc.getMainStreet() != null ? new StreetDto(loc.getMainStreet()) : null)
+                .streetOne(loc.getStreetOne() != null ? new StreetDto(loc.getStreetOne()) : null)
+                .streetTwo(loc.getStreetTwo() != null ? new StreetDto(loc.getStreetTwo()) : null)
                 .build();
 
         // Category details
         var cat = p.getCategory();
         var categoryDetails = cat == null ? null : CategoryDetailsDto.builder()
+                .categoryId(cat.getCategoryId())
                 .categoryName(cat.getName())
                 .description(cat.getDescription())
                 .priorityLevel(cat.getPriorityLevel())
