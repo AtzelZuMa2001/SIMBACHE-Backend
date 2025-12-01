@@ -35,6 +35,17 @@ public class RepairManagementController {
         }
     }
 
+    @GetMapping("/catalogs")
+    public ResponseEntity<?> getCatalogs(@RequestHeader(value = "X-Auth-Token", required = false) String token) {
+        try {
+            return ResponseEntity.ok(repairService.getCatalogs(token));
+        } catch (UnauthorizedAccessException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al cargar catálogos: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/save")
     public ResponseEntity<?> saveRepair(
             @RequestHeader(value = "X-Auth-Token", required = false) String token,

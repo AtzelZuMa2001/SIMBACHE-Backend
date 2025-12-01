@@ -4,16 +4,20 @@ import com.korealm.simbache.dtos.repairs.PotholeRepairDto;
 import com.korealm.simbache.exceptions.UnauthorizedAccessException;
 import com.korealm.simbache.models.*;
 import com.korealm.simbache.repositories.*;
+import com.korealm.simbache.services.interfaces.RepairManagementService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RepairManagementServiceImpl {
+public class RepairManagementServiceImpl implements RepairManagementService {
 
     // Repositorios
     private final PotholeRepository potholeRepository;
@@ -31,6 +35,7 @@ public class RepairManagementServiceImpl {
      * Obtiene los datos de reparación.
      * Requiere que el usuario esté autenticado (cualquier rol válido).
      */
+    @Override
     public PotholeRepairDto getRepairData(String token, Long potholeId) {
         // 1. Verificación de sesión
         if (verificationService.isUserUnauthorized(token))
@@ -84,6 +89,7 @@ public class RepairManagementServiceImpl {
      * Requiere permisos de ADMINISTRADOR.
      */
     @Transactional
+    @Override
     public void saveRepair(String token, PotholeRepairDto dto) {
         // 1. Verificación de permisos de Administrador
         if (!verificationService.isUserAdmin(token))
@@ -160,6 +166,7 @@ public class RepairManagementServiceImpl {
      * Realiza un BORRADO LÓGICO (Soft Delete) desactivando la reparación.
      */
     @Transactional
+    @Override
     public void deleteRepair(String token, Long potholeId) {
         // 1. Solo un Admin puede eliminar
         if (!verificationService.isUserAdmin(token))
@@ -181,5 +188,43 @@ public class RepairManagementServiceImpl {
                 auditLoggingService.log(u, "ELIMINACION_REPARACION",
                         "El usuario " + u.getUsername() + " eliminó (lógicamente) la reparación del bache #" + potholeId)
         );
+    }
+
+
+    /**
+     * Obtiene los catálogos mapeados a objetos simples para evitar referencias circulares.
+     */
+    @Override
+    public Map<String, Object> getCatalogs(String token) {
+        if (verificationService.isUserUnauthorized(token))
+            throw new UnauthorizedAccessException("Usuario no autorizado");
+
+        // 1. Obtenemos las entidades de la BD
+        List<Squad> squadsEntities = squadRepository.findAll();
+        List<RepairStatus> statusEntities = repairStatusRepository.findAll();
+
+        // 2. Mapeamos Squads a objetos simples (DTOs)
+        // Esto evita que Jackson intente serializar el Contractor -> Location -> State -> Loop infinito
+        List<Map<String, Object>> simpleSquads = squadsEntities.stream().map(sq -> {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("squadId", sq.getSquadId());
+            dto.put("squadName", sq.getSquadName());
+            return dto;
+        }).toList();
+
+        // 3. Mapeamos Statuses (Aunque suelen ser seguros, es mejor prevenir)
+        List<Map<String, Object>> simpleStatuses = statusEntities.stream().map(st -> {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("statusId", st.getStatusId());
+            dto.put("statusName", st.getStatusName());
+            return dto;
+        }).toList();
+
+        // 4. Empaquetamos todo
+        Map<String, Object> catalogs = new HashMap<>();
+        catalogs.put("squads", simpleSquads);
+        catalogs.put("statuses", simpleStatuses);
+
+        return catalogs;
     }
 }
