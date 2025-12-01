@@ -21,7 +21,7 @@ public class RepairManagementController {
 
     @GetMapping("/{potholeId}")
     public ResponseEntity<?> getRepairByReport(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Auth-Token", required = false) String token,
             @PathVariable Long potholeId) {
         try {
             // Si tu front manda "Bearer XXXXX", asegúrate de limpiar el string si tu VerificationService espera solo el token
@@ -37,11 +37,25 @@ public class RepairManagementController {
 
     @PostMapping("/save")
     public ResponseEntity<?> saveRepair(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Auth-Token", required = false) String token,
             @RequestBody PotholeRepairDto dto) {
         try {
             repairService.saveRepair(token, dto);
             return ResponseEntity.ok("Reparación guardada correctamente");
+        } catch (UnauthorizedAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{potholeId}")
+    public ResponseEntity<?> deleteRepair(
+            @RequestHeader(value = "X-Auth-Token", required = false) String token,
+            @PathVariable Long potholeId) {
+        try {
+            repairService.deleteRepair(token, potholeId);
+            return ResponseEntity.ok("Reparación eliminada correctamente.");
         } catch (UnauthorizedAccessException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {

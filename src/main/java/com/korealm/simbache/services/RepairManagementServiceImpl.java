@@ -41,6 +41,10 @@ public class RepairManagementServiceImpl {
 
         Optional<Repair> repairOpt = repairRepository.findByPothole(pothole);
 
+        if (repairOpt.isPresent() && !repairOpt.get().isActive()) {
+            repairOpt = Optional.empty();
+        }
+
         // 2. Construcción del DTO
         var dtoBuilder = PotholeRepairDto.builder()
                 .potholeId(pothole.getPotholeId())
@@ -95,6 +99,11 @@ public class RepairManagementServiceImpl {
 
         if (existing.isPresent()) {
             repair = existing.get();
+
+            // Si existía pero estaba borrada lógicamente, la reactivamos al guardar
+            if (!repair.isActive()) {
+                repair.setActive(true);
+            }
         } else {
             repair = new Repair();
             repair.setPothole(pothole);
@@ -144,6 +153,33 @@ public class RepairManagementServiceImpl {
 
         verificationService.getUserByToken(token).ifPresent(u ->
                 auditLoggingService.log(u, actionType, "El usuario " + u.getUsername() + detailMsg)
+        );
+    }
+
+    /**
+     * Realiza un BORRADO LÓGICO (Soft Delete) desactivando la reparación.
+     */
+    @Transactional
+    public void deleteRepair(String token, Long potholeId) {
+        // 1. Solo un Admin puede eliminar
+        if (!verificationService.isUserAdmin(token))
+            throw new UnauthorizedAccessException("El usuario no tiene permisos para eliminar reparaciones.");
+
+        // 2. Buscamos el bache y su reparación
+        Pothole pothole = potholeRepository.findByPotholeId(potholeId)
+                .orElseThrow(() -> new RuntimeException("El reporte no existe."));
+
+        Repair repair = repairRepository.findByPothole(pothole)
+                .orElseThrow(() -> new RuntimeException("No existe reparación activa para este reporte."));
+
+        // 3. APAGAMOS EL SWITCH (Borrado Lógico)
+        repair.setActive(false);
+        repairRepository.save(repair);
+
+        // 4. Log de auditoría
+        verificationService.getUserByToken(token).ifPresent(u ->
+                auditLoggingService.log(u, "ELIMINACION_REPARACION",
+                        "El usuario " + u.getUsername() + " eliminó (lógicamente) la reparación del bache #" + potholeId)
         );
     }
 }
