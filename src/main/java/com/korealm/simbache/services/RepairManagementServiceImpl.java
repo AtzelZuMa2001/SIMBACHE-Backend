@@ -91,36 +91,47 @@ public class RepairManagementServiceImpl implements RepairManagementService {
     @Transactional
     @Override
     public void saveRepair(String token, PotholeRepairDto dto) {
-        // 1. Verificación de permisos de Administrador
+        // 1. Verificación de permisos
         if (!verificationService.isUserAdmin(token))
             throw new UnauthorizedAccessException("El usuario no tiene permisos para modificar reparaciones.");
 
+        // 2. Validar que venga la Cuadrilla (Obligatorio por regla de negocio)
+        if (dto.getSquadId() == null) {
+            throw new RuntimeException("Debe seleccionar una cuadrilla obligatoriamente.");
+        }
+
+        // 3. Buscar la Cuadrilla y su Contratista
+        Squad selectedSquad = squadRepository.findById(dto.getSquadId())
+                .orElseThrow(() -> new RuntimeException("La cuadrilla seleccionada no existe."));
+
+        Contractor contractorFromSquad = selectedSquad.getContractor();
+        if (contractorFromSquad == null) {
+            throw new RuntimeException("La cuadrilla seleccionada no tiene un contratista asignado.");
+        }
+
+        // 4. Buscar o Crear la Reparación
         Pothole pothole = potholeRepository.findById(dto.getPotholeId())
                 .orElseThrow(() -> new RuntimeException("Bache no existe"));
 
         Repair repair;
-        boolean isNew = false;
-
         Optional<Repair> existing = repairRepository.findByPothole(pothole);
 
         if (existing.isPresent()) {
             repair = existing.get();
-
-            // Si existía pero estaba borrada lógicamente, la reactivamos al guardar
-            if (!repair.isActive()) {
-                repair.setActive(true);
-            }
+            if (!repair.isActive()) repair.setActive(true); // Reactivar si estaba borrado lógico
         } else {
             repair = new Repair();
             repair.setPothole(pothole);
-            repair.setBudget(BigDecimal.ZERO); // Default
-            Contractor defaultContractor = contractorRepository.findAll().stream().findFirst()
-                    .orElseThrow(() -> new RuntimeException("Error interno: No hay contratistas registrados para asignar por defecto."));
-            repair.setContractor(defaultContractor);
-            isNew = true;
+            repair.setBudget(BigDecimal.ZERO);
+            repair.setContractor(contractorFromSquad);
         }
 
-        // 2. Actualización de campos
+        // Si cambia la cuadrilla en una edición, actualizamos el contratista en la reparación también
+        if (!repair.getContractor().getContractorId().equals(contractorFromSquad.getContractorId())) {
+            repair.setContractor(contractorFromSquad);
+        }
+
+        // 5. Asignar datos del formulario
         repair.setStartDate(dto.getStartDate());
         repair.setEndDate(dto.getEndDate());
 
@@ -128,47 +139,40 @@ public class RepairManagementServiceImpl implements RepairManagementService {
                 .orElseThrow(() -> new RuntimeException("Estado inválido"));
         repair.setStatus(status);
 
-        // Guardar entidad principal Repair
+        // 6. Guardar Reparación
         repair = repairRepository.save(repair);
 
-        // 3. Manejo de Cuadrilla (RepairSquads)
-        if (dto.getSquadId() != null) {
-            Squad squad = squadRepository.findById(dto.getSquadId())
-                    .orElseThrow(() -> new RuntimeException("Cuadrilla no encontrada"));
+        // 7. Guardar Relación en RepairSquads
+        RepairSquad repairSquad = repairSquadRepository.findByRepair(repair)
+                .orElse(new RepairSquad());
 
-            RepairSquad repairSquad = repairSquadRepository.findByRepair(repair)
-                    .orElse(new RepairSquad());
+        repairSquad.setRepair(repair);
+        repairSquad.setSquad(selectedSquad);
 
-            repairSquad.setRepair(repair);
-            repairSquad.setSquad(squad);
-
-            if (repairSquad.getAssignedDate() == null) {
-                repairSquad.setAssignedDate(dto.getStartDate());
-            }
-            // Si el estado es "Terminado" (asumiendo ID X), podríamos setear ReleasedDate aquí,
-            // pero por ahora lo dejamos simple.
-
-            repairSquadRepository.save(repairSquad);
+        if (repairSquad.getAssignedDate() == null) {
+            repairSquad.setAssignedDate(dto.getStartDate());
         }
 
-        // 4. Log de auditoría (Modificación)
-        String actionType = isNew ? "CREACION_REPARACION" : "ACTUALIZACION_REPARACION";
-        String detailMsg = isNew
-                ? " creó una asignación de reparación para el bache #" + dto.getPotholeId()
-                : " actualizó la reparación del bache #" + dto.getPotholeId();
+        if (repairSquad.getReleasedDate() == null) {
+            repairSquad.setReleasedDate(dto.getEndDate());
+        }
 
+        repairSquadRepository.save(repairSquad);
+
+        // Log auditoría...
         verificationService.getUserByToken(token).ifPresent(u ->
-                auditLoggingService.log(u, actionType, "El usuario " + u.getUsername() + detailMsg)
+                auditLoggingService.log(u, "GUARDAR_REPARACION", "Se guardó reparación para el bache " + dto.getPotholeId())
         );
     }
 
     /**
-     * Realiza un BORRADO LÓGICO (Soft Delete) desactivando la reparación.
+     * Realiza un BORRADO FÍSICO (Hard Delete).
+     * Elimina el registro de la BD permanentemente.
      */
     @Transactional
     @Override
     public void deleteRepair(String token, Long potholeId) {
-        // 1. Solo un Admin puede eliminar
+        // 1. Verificación de seguridad
         if (!verificationService.isUserAdmin(token))
             throw new UnauthorizedAccessException("El usuario no tiene permisos para eliminar reparaciones.");
 
@@ -179,14 +183,20 @@ public class RepairManagementServiceImpl implements RepairManagementService {
         Repair repair = repairRepository.findByPothole(pothole)
                 .orElseThrow(() -> new RuntimeException("No existe reparación activa para este reporte."));
 
-        // 3. APAGAMOS EL SWITCH (Borrado Lógico)
-        repair.setActive(false);
-        repairRepository.save(repair);
+        // 3. ELIMINAR DEPENDENCIAS
+        Optional<RepairSquad> assignedSquad = repairSquadRepository.findByRepair(repair);
 
-        // 4. Log de auditoría
+        if (assignedSquad.isPresent()) {
+            repairSquadRepository.delete(assignedSquad.get());
+        }
+
+        // 4. ELIMINAR LA REPARACIÓN
+        repairRepository.delete(repair);
+
+        // 5. Log de auditoría
         verificationService.getUserByToken(token).ifPresent(u ->
-                auditLoggingService.log(u, "ELIMINACION_REPARACION",
-                        "El usuario " + u.getUsername() + " eliminó (lógicamente) la reparación del bache #" + potholeId)
+                auditLoggingService.log(u, "ELIMINACION_FISICA_REPARACION",
+                        "El usuario " + u.getUsername() + " borró permanentemente la reparación del bache #" + potholeId)
         );
     }
 
